@@ -14,6 +14,12 @@ var app = express();
 var path = require("path");
 const collegeData = require('./modules/collegeData'); // assuming you have a collegeData module
 const { log } = require("console");
+const express = require('express');
+const app = express();
+
+app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
+
 
 // GET /students
 app.get('/students', (req, res) => {
@@ -109,6 +115,10 @@ app.get('/htmlDemo', (req, res) => {
     res.sendFile(__dirname + '/views/htmlDemo.html');
 });
 
+app.get("/students/add", function(req, res){
+    res.sendFile(__dirname + "/views/addStudent.html");
+});
+
 
 // setup http server to listen on HTTP_PORT
 collegeData.initialize()
@@ -128,4 +138,10 @@ collegeData.initialize()
 // [ no matching route ]
 app.use((req, res) => {
     res.status(404).send('Page Not Found');
+});
+
+app.post("/students/add", function(req, res){
+    collegeData.addStudent(req.body).then(() => {
+        res.redirect("/students");
+    });
 });
